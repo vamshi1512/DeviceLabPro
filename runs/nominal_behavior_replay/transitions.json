@@ -1,0 +1,38 @@
+[
+  {
+    "from": "OFF",
+    "reason": "Power on command",
+    "tick": 0,
+    "to": "BOOTING"
+  },
+  {
+    "from": "BOOTING",
+    "reason": "Boot completed",
+    "tick": 2,
+    "to": "IDLE"
+  },
+  {
+    "from": "IDLE",
+    "reason": "Start cycle command",
+    "tick": 3,
+    "to": "RUNNING"
+  },
+  {
+    "from": "RUNNING",
+    "reason": "Stop cycle command",
+    "tick": 16,
+    "to": "IDLE"
+  },
+  {
+    "from": "IDLE",
+    "reason": "Power off command",
+    "tick": 17,
+    "to": "SHUTDOWN"
+  },
+  {
+    "from": "SHUTDOWN",
+    "reason": "Shutdown complete",
+    "tick": 18,
+    "to": "OFF"
+  }
+]

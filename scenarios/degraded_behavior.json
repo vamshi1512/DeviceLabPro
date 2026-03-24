@@ -1,0 +1,35 @@
+{
+  "id": "degraded-behavior",
+  "name": "Degraded Behavior",
+  "description": "Injects a communications fault, verifies degraded operation, and confirms recovery back to nominal control.",
+  "ui_rank": 2,
+  "profile_id": "thermal-controller-v1",
+  "duration_ticks": 16,
+  "seed": 11,
+  "deterministic": true,
+  "events": [
+    { "tick": 0, "type": "command", "command": { "type": "POWER_ON", "source": "scenario" } },
+    { "tick": 3, "type": "command", "command": { "type": "START_CYCLE", "source": "scenario" } },
+    { "tick": 5, "type": "command", "command": { "type": "HEARTBEAT", "source": "scenario" } },
+    { "tick": 6, "type": "sensor_override", "sensor_override": { "temperature_c": 37.2, "pressure_kpa": 103.9, "flow_lpm": 14.2 } },
+    { "tick": 7, "type": "inject_fault", "fault": "COMMUNICATION_FAILURE", "note": "Telemetry drop injected" },
+    { "tick": 8, "type": "sensor_override", "sensor_override": { "pressure_kpa": 98.6, "flow_lpm": 6.1, "link_ok": false } },
+    { "tick": 8, "type": "note", "note": "Controller should remain operational in degraded mode" },
+    { "tick": 9, "type": "command", "command": { "type": "HEARTBEAT", "source": "scenario" } },
+    { "tick": 10, "type": "sensor_override", "sensor_override": { "temperature_c": 45.4, "pressure_kpa": 97.4, "flow_lpm": 5.0, "link_ok": false } },
+    { "tick": 11, "type": "clear_fault", "fault": "COMMUNICATION_FAILURE", "note": "Telemetry link restored" },
+    { "tick": 11, "type": "sensor_override", "sensor_override": { "pressure_kpa": 102.1, "flow_lpm": 13.2, "link_ok": true } },
+    { "tick": 12, "type": "command", "command": { "type": "HEARTBEAT", "source": "scenario" } },
+    { "tick": 14, "type": "command", "command": { "type": "STOP_CYCLE", "source": "scenario" } }
+  ],
+  "expectations": [
+    { "tick": 2, "kind": "state_equals", "value": "IDLE" },
+    { "tick": 7, "kind": "state_equals", "value": "DEGRADED" },
+    { "tick": 8, "kind": "fault_present", "fault": "COMMUNICATION_FAILURE" },
+    { "tick": 8, "kind": "actuator_at_least", "field": "fan_pwm", "value": 90.0 },
+    { "tick": 10, "kind": "log_contains", "contains": "Fault raised" },
+    { "tick": 11, "kind": "fault_absent", "fault": "COMMUNICATION_FAILURE" },
+    { "tick": 11, "kind": "state_equals", "value": "RUNNING" },
+    { "tick": 14, "kind": "state_equals", "value": "IDLE" }
+  ]
+}

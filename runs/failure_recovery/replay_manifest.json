@@ -1,0 +1,197 @@
+{
+  "expected_digest": "9446ffd282c31318",
+  "format_version": 1,
+  "profile": {
+    "ambient_temperature_c": 24.0,
+    "boosted_fan_pwm": 92,
+    "boot_ticks": 2,
+    "cooling_per_tick": 2.3,
+    "critical_temperature_c": 79.0,
+    "degraded_escalation_ticks": 5,
+    "description": "Baseline thermal process controller tuned for deterministic integration testing.",
+    "heartbeat_timeout_ticks": 4,
+    "heat_gain_per_tick": 3.6,
+    "id": "thermal-controller-v1",
+    "initial_temperature_c": 24.0,
+    "max_pressure_kpa": 116.0,
+    "min_pressure_kpa": 96.0,
+    "name": "Thermal Controller Mk1",
+    "nominal_fan_pwm": 55,
+    "nominal_pressure_kpa": 101.3,
+    "pressure_drop_per_tick": 1.1,
+    "pump_flow_degraded_lpm": 8.0,
+    "pump_flow_nominal_lpm": 15.0,
+    "recovery_temperature_c": 58.0,
+    "recovery_ticks": 3,
+    "sensor_noise_pressure_kpa": 0.0,
+    "sensor_noise_temperature_c": 0.0,
+    "shutdown_ticks": 1,
+    "target_temperature_c": 62.0,
+    "warning_temperature_c": 71.0
+  },
+  "scenario": {
+    "description": "Drives the controller into an overtemperature fault, cools it back into range, acknowledges the fault, and verifies controlled recovery.",
+    "deterministic": true,
+    "duration_ticks": 20,
+    "events": [
+      {
+        "command": {
+          "source": "scenario",
+          "type": "POWER_ON"
+        },
+        "note": "",
+        "tick": 0,
+        "type": "command"
+      },
+      {
+        "command": {
+          "source": "scenario",
+          "type": "START_CYCLE"
+        },
+        "note": "",
+        "tick": 3,
+        "type": "command"
+      },
+      {
+        "command": {
+          "source": "scenario",
+          "type": "HEARTBEAT"
+        },
+        "note": "",
+        "tick": 5,
+        "type": "command"
+      },
+      {
+        "note": "",
+        "sensor_override": {
+          "flow_lpm": 14.9,
+          "pressure_kpa": 104.4,
+          "temperature_c": 69.0
+        },
+        "tick": 7,
+        "type": "sensor_override"
+      },
+      {
+        "note": "",
+        "sensor_override": {
+          "temperature_c": 82.0
+        },
+        "tick": 8,
+        "type": "sensor_override"
+      },
+      {
+        "note": "Critical overtemperature fault should latch safe-state outputs",
+        "tick": 9,
+        "type": "note"
+      },
+      {
+        "note": "",
+        "sensor_override": {
+          "flow_lpm": 8.0,
+          "pressure_kpa": 100.1,
+          "temperature_c": 54.0
+        },
+        "tick": 10,
+        "type": "sensor_override"
+      },
+      {
+        "command": {
+          "source": "scenario",
+          "type": "ACK_FAULT"
+        },
+        "note": "",
+        "tick": 11,
+        "type": "command"
+      },
+      {
+        "command": {
+          "source": "scenario",
+          "type": "HEARTBEAT"
+        },
+        "note": "",
+        "tick": 11,
+        "type": "command"
+      },
+      {
+        "note": "",
+        "sensor_override": {
+          "flow_lpm": 12.5,
+          "pressure_kpa": 102.2,
+          "temperature_c": 50.6
+        },
+        "tick": 12,
+        "type": "sensor_override"
+      },
+      {
+        "command": {
+          "source": "scenario",
+          "type": "HEARTBEAT"
+        },
+        "note": "",
+        "tick": 14,
+        "type": "command"
+      },
+      {
+        "command": {
+          "source": "scenario",
+          "type": "STOP_CYCLE"
+        },
+        "note": "",
+        "tick": 16,
+        "type": "command"
+      },
+      {
+        "command": {
+          "source": "scenario",
+          "type": "POWER_OFF"
+        },
+        "note": "",
+        "tick": 17,
+        "type": "command"
+      }
+    ],
+    "expectations": [
+      {
+        "field": "",
+        "kind": "state_equals",
+        "tick": 8,
+        "value": "FAULTED"
+      },
+      {
+        "fault": "OVERHEATING",
+        "field": "",
+        "kind": "fault_present",
+        "tick": 8
+      },
+      {
+        "fault": "OVERHEATING",
+        "field": "",
+        "kind": "fault_absent",
+        "tick": 10
+      },
+      {
+        "field": "",
+        "kind": "state_equals",
+        "tick": 11,
+        "value": "RECOVERING"
+      },
+      {
+        "field": "",
+        "kind": "state_equals",
+        "tick": 14,
+        "value": "RUNNING"
+      },
+      {
+        "field": "",
+        "kind": "state_equals",
+        "tick": 18,
+        "value": "OFF"
+      }
+    ],
+    "id": "failure-recovery",
+    "name": "Failure Recovery",
+    "profile_id": "thermal-controller-v1",
+    "seed": 19
+  },
+  "seed": 19
+}

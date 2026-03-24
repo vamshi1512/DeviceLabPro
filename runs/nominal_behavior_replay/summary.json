@@ -1,0 +1,253 @@
+{
+  "assertions": [
+    {
+      "description": "State matched expected value IDLE",
+      "passed": true,
+      "tick": 2
+    },
+    {
+      "description": "State matched expected value RUNNING",
+      "passed": true,
+      "tick": 3
+    },
+    {
+      "description": "State matched expected value RUNNING",
+      "passed": true,
+      "tick": 6
+    },
+    {
+      "description": "Temperature above threshold",
+      "passed": true,
+      "tick": 8
+    },
+    {
+      "description": "Fault COMMUNICATION_FAILURE absent",
+      "passed": true,
+      "tick": 14
+    },
+    {
+      "description": "State matched expected value IDLE",
+      "passed": true,
+      "tick": 16
+    },
+    {
+      "description": "State matched expected value OFF",
+      "passed": true,
+      "tick": 18
+    },
+    {
+      "description": "Replay digest matched expected deterministic digest",
+      "passed": true,
+      "tick": 19
+    }
+  ],
+  "digest": "7de1a6515dff52eb",
+  "duration_ticks": 20,
+  "final_faults": [],
+  "final_state": "OFF",
+  "log_count": 17,
+  "passed": true,
+  "profile": {
+    "ambient_temperature_c": 24.0,
+    "boosted_fan_pwm": 92,
+    "boot_ticks": 2,
+    "cooling_per_tick": 2.3,
+    "critical_temperature_c": 79.0,
+    "degraded_escalation_ticks": 5,
+    "description": "Baseline thermal process controller tuned for deterministic integration testing.",
+    "heartbeat_timeout_ticks": 4,
+    "heat_gain_per_tick": 3.6,
+    "id": "thermal-controller-v1",
+    "initial_temperature_c": 24.0,
+    "max_pressure_kpa": 116.0,
+    "min_pressure_kpa": 96.0,
+    "name": "Thermal Controller Mk1",
+    "nominal_fan_pwm": 55,
+    "nominal_pressure_kpa": 101.3,
+    "pressure_drop_per_tick": 1.1,
+    "pump_flow_degraded_lpm": 8.0,
+    "pump_flow_nominal_lpm": 15.0,
+    "recovery_temperature_c": 58.0,
+    "recovery_ticks": 3,
+    "sensor_noise_pressure_kpa": 0.0,
+    "sensor_noise_temperature_c": 0.0,
+    "shutdown_ticks": 1,
+    "target_temperature_c": 62.0,
+    "warning_temperature_c": 71.0
+  },
+  "run_id": "nominal-behavior-7de1a6515dff",
+  "scenario": {
+    "description": "Baseline startup, heating cycle, and clean shutdown with deterministic heartbeats.",
+    "deterministic": true,
+    "duration_ticks": 20,
+    "events": [
+      {
+        "command": {
+          "source": "scenario",
+          "type": "POWER_ON"
+        },
+        "note": "",
+        "tick": 0,
+        "type": "command"
+      },
+      {
+        "command": {
+          "source": "scenario",
+          "type": "START_CYCLE"
+        },
+        "note": "",
+        "tick": 3,
+        "type": "command"
+      },
+      {
+        "command": {
+          "source": "scenario",
+          "type": "SET_TARGET_TEMPERATURE",
+          "value": 66.0
+        },
+        "note": "",
+        "tick": 4,
+        "type": "command"
+      },
+      {
+        "command": {
+          "source": "scenario",
+          "type": "HEARTBEAT"
+        },
+        "note": "",
+        "tick": 6,
+        "type": "command"
+      },
+      {
+        "command": {
+          "source": "scenario",
+          "type": "HEARTBEAT"
+        },
+        "note": "",
+        "tick": 10,
+        "type": "command"
+      },
+      {
+        "command": {
+          "source": "scenario",
+          "type": "HEARTBEAT"
+        },
+        "note": "",
+        "tick": 14,
+        "type": "command"
+      },
+      {
+        "note": "Nominal thermal cycle stabilized",
+        "tick": 15,
+        "type": "note"
+      },
+      {
+        "command": {
+          "source": "scenario",
+          "type": "STOP_CYCLE"
+        },
+        "note": "",
+        "tick": 16,
+        "type": "command"
+      },
+      {
+        "command": {
+          "source": "scenario",
+          "type": "POWER_OFF"
+        },
+        "note": "",
+        "tick": 17,
+        "type": "command"
+      }
+    ],
+    "expectations": [
+      {
+        "field": "",
+        "kind": "state_equals",
+        "tick": 2,
+        "value": "IDLE"
+      },
+      {
+        "field": "",
+        "kind": "state_equals",
+        "tick": 3,
+        "value": "RUNNING"
+      },
+      {
+        "field": "",
+        "kind": "state_equals",
+        "tick": 6,
+        "value": "RUNNING"
+      },
+      {
+        "field": "",
+        "kind": "temperature_above",
+        "tick": 8,
+        "value": 35.0
+      },
+      {
+        "fault": "COMMUNICATION_FAILURE",
+        "field": "",
+        "kind": "fault_absent",
+        "tick": 14
+      },
+      {
+        "field": "",
+        "kind": "state_equals",
+        "tick": 16,
+        "value": "IDLE"
+      },
+      {
+        "field": "",
+        "kind": "state_equals",
+        "tick": 18,
+        "value": "OFF"
+      }
+    ],
+    "id": "nominal-behavior",
+    "name": "Nominal Behavior",
+    "profile_id": "thermal-controller-v1",
+    "seed": 7
+  },
+  "seed": 7,
+  "telemetry_count": 20,
+  "transition_count": 6,
+  "transitions": [
+    {
+      "from": "OFF",
+      "reason": "Power on command",
+      "tick": 0,
+      "to": "BOOTING"
+    },
+    {
+      "from": "BOOTING",
+      "reason": "Boot completed",
+      "tick": 2,
+      "to": "IDLE"
+    },
+    {
+      "from": "IDLE",
+      "reason": "Start cycle command",
+      "tick": 3,
+      "to": "RUNNING"
+    },
+    {
+      "from": "RUNNING",
+      "reason": "Stop cycle command",
+      "tick": 16,
+      "to": "IDLE"
+    },
+    {
+      "from": "IDLE",
+      "reason": "Power off command",
+      "tick": 17,
+      "to": "SHUTDOWN"
+    },
+    {
+      "from": "SHUTDOWN",
+      "reason": "Shutdown complete",
+      "tick": 18,
+      "to": "OFF"
+    }
+  ]
+}

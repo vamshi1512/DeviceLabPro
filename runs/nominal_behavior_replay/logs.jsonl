@@ -1,0 +1,17 @@
+{"context":{"profile":"thermal-controller-v1","seed":7,"target_temperature_c":62.0},"event_type":"LOG","message":"Simulator initialized","severity":"INFO","tick":0}
+{"context":{"command":"POWER_ON","source":"scenario","tick":0},"event_type":"LOG","message":"Command processed","severity":"INFO","tick":0}
+{"context":{"from":"OFF","reason":"Power on command","to":"BOOTING"},"event_type":"STATE_TRANSITION","message":"State transition","severity":"INFO","tick":0}
+{"context":{"from":"BOOTING","reason":"Boot completed","to":"IDLE"},"event_type":"STATE_TRANSITION","message":"State transition","severity":"INFO","tick":2}
+{"context":{"command":"START_CYCLE","source":"scenario","tick":3},"event_type":"LOG","message":"Command processed","severity":"INFO","tick":3}
+{"context":{"from":"IDLE","reason":"Start cycle command","to":"RUNNING"},"event_type":"STATE_TRANSITION","message":"State transition","severity":"INFO","tick":3}
+{"context":{"command":"SET_TARGET_TEMPERATURE","source":"scenario","tick":4},"event_type":"LOG","message":"Command processed","severity":"INFO","tick":4}
+{"context":{"target_temperature_c":66.0},"event_type":"LOG","message":"Target temperature updated","severity":"INFO","tick":4}
+{"context":{"command":"HEARTBEAT","source":"scenario","tick":6},"event_type":"LOG","message":"Command processed","severity":"INFO","tick":6}
+{"context":{"command":"HEARTBEAT","source":"scenario","tick":10},"event_type":"LOG","message":"Command processed","severity":"INFO","tick":10}
+{"context":{"command":"HEARTBEAT","source":"scenario","tick":14},"event_type":"LOG","message":"Command processed","severity":"INFO","tick":14}
+{"context":{"tick":15},"event_type":"SCENARIO_MARKER","message":"Nominal thermal cycle stabilized","severity":"INFO","tick":15}
+{"context":{"command":"STOP_CYCLE","source":"scenario","tick":16},"event_type":"LOG","message":"Command processed","severity":"INFO","tick":16}
+{"context":{"from":"RUNNING","reason":"Stop cycle command","to":"IDLE"},"event_type":"STATE_TRANSITION","message":"State transition","severity":"INFO","tick":16}
+{"context":{"command":"POWER_OFF","source":"scenario","tick":17},"event_type":"LOG","message":"Command processed","severity":"INFO","tick":17}
+{"context":{"from":"IDLE","reason":"Power off command","to":"SHUTDOWN"},"event_type":"STATE_TRANSITION","message":"State transition","severity":"INFO","tick":17}
+{"context":{"from":"SHUTDOWN","reason":"Shutdown complete","to":"OFF"},"event_type":"STATE_TRANSITION","message":"State transition","severity":"INFO","tick":18}

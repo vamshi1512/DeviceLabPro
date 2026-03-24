@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DeviceLab Pro Report</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07111f;
+      --panel: rgba(10, 21, 39, 0.82);
+      --border: rgba(137, 195, 255, 0.18);
+      --text: #edf4ff;
+      --muted: #90a6c3;
+      --accent: #5db4ff;
+      --pass: #4ade80;
+      --fail: #f97316;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Space Grotesk", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(93, 180, 255, 0.16), transparent 36%),
+        linear-gradient(180deg, #07111f 0%, #030812 100%);
+      color: var(--text);
+      padding: 32px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(16px);
+    }
+    h1, h2 { margin: 0 0 14px; }
+    .metric {
+      font-size: 32px;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+    .muted { color: var(--muted); }
+    .assertion {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 10px 0;
+    }
+    .assertion.pass strong { color: var(--pass); }
+    .assertion.fail strong { color: var(--fail); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      text-align: left;
+      padding: 10px 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+  </style>
+</head>
+<body>
+  <div class="grid">
+    <section class="panel">
+      <h1>Degraded Behavior</h1>
+      <div class="muted">Injects a communications fault, verifies degraded operation, and confirms recovery back to nominal control.</div>
+      <div class="metric">PASS</div>
+      <div class="muted">run id degraded-behavior-385b16c50c12</div>
+    </section>
+    <section class="panel">
+      <h2>Final State</h2>
+      <div class="metric">IDLE</div>
+      <div class="muted">digest 385b16c50c124841</div>
+    </section>
+    <section class="panel">
+      <h2>Counts</h2>
+      <div class="muted">telemetry frames 16</div>
+      <div class="muted">log entries 20</div>
+      <div class="muted">state transitions 6</div>
+    </section>
+  </div>
+
+  <section class="panel" style="margin-top: 18px;">
+    <h2>Assertions</h2>
+    <div><li class='assertion pass'><span>tick 2</span><strong>State matched expected value IDLE</strong></li><li class='assertion pass'><span>tick 7</span><strong>State matched expected value DEGRADED</strong></li><li class='assertion pass'><span>tick 8</span><strong>Fault COMMUNICATION_FAILURE present</strong></li><li class='assertion pass'><span>tick 8</span><strong>Actuator fan_pwm satisfied minimum value</strong></li><li class='assertion pass'><span>tick 10</span><strong>Observed expected log marker</strong></li><li class='assertion pass'><span>tick 11</span><strong>Fault COMMUNICATION_FAILURE absent</strong></li><li class='assertion pass'><span>tick 11</span><strong>State matched expected value RUNNING</strong></li><li class='assertion pass'><span>tick 14</span><strong>State matched expected value IDLE</strong></li></div>
+  </section>
+
+  <section class="panel" style="margin-top: 18px;">
+    <h2>Recent Telemetry</h2>
+    <table>
+      <thead>
+        <tr><th>Tick</th><th>State</th><th>Temp C</th><th>Pressure kPa</th><th>Flow LPM</th></tr>
+      </thead>
+      <tbody><tr><td>4</td><td>RUNNING</td><td>30.3</td><td>105.2</td><td>8.0</td></tr><tr><td>5</td><td>RUNNING</td><td>33.4</td><td>105.3</td><td>12.0</td></tr><tr><td>6</td><td>RUNNING</td><td>40.3</td><td>105.3</td><td>15.0</td></tr><tr><td>7</td><td>DEGRADED</td><td>41.9</td><td>102.1</td><td>8.5</td></tr><tr><td>8</td><td>DEGRADED</td><td>43.4</td><td>100.3</td><td>5.5</td></tr><tr><td>9</td><td>DEGRADED</td><td>44.9</td><td>100.3</td><td>5.5</td></tr><tr><td>10</td><td>DEGRADED</td><td>46.9</td><td>100.3</td><td>5.5</td></tr><tr><td>11</td><td>RUNNING</td><td>50.1</td><td>105.3</td><td>15.0</td></tr><tr><td>12</td><td>RUNNING</td><td>53.2</td><td>105.3</td><td>15.0</td></tr><tr><td>13</td><td>RUNNING</td><td>56.3</td><td>105.3</td><td>15.0</td></tr><tr><td>14</td><td>IDLE</td><td>54.7</td><td>103.3</td><td>13.9</td></tr><tr><td>15</td><td>IDLE</td><td>53.1</td><td>101.3</td><td>12.8</td></tr></tbody>
+    </table>
+  </section>
+
+  <section class="panel" style="margin-top: 18px;">
+    <h2>Recent Logs</h2>
+    <table>
+      <thead>
+        <tr><th>Tick</th><th>Severity</th><th>Event</th><th>Message</th></tr>
+      </thead>
+      <tbody><tr><td>0</td><td>INFO</td><td>LOG</td><td>Simulator initialized</td></tr><tr><td>0</td><td>INFO</td><td>LOG</td><td>Command processed</td></tr><tr><td>0</td><td>INFO</td><td>STATE_TRANSITION</td><td>State transition</td></tr><tr><td>2</td><td>INFO</td><td>STATE_TRANSITION</td><td>State transition</td></tr><tr><td>3</td><td>INFO</td><td>LOG</td><td>Command processed</td></tr><tr><td>3</td><td>INFO</td><td>STATE_TRANSITION</td><td>State transition</td></tr><tr><td>5</td><td>INFO</td><td>LOG</td><td>Command processed</td></tr><tr><td>6</td><td>INFO</td><td>LOG</td><td>Sensor override applied</td></tr><tr><td>7</td><td>ERROR</td><td>FAULT_RAISED</td><td>Fault raised</td></tr><tr><td>7</td><td>INFO</td><td>STATE_TRANSITION</td><td>State transition</td></tr><tr><td>8</td><td>INFO</td><td>LOG</td><td>Sensor override applied</td></tr><tr><td>8</td><td>INFO</td><td>SCENARIO_MARKER</td><td>Controller should remain operational in degraded mode</td></tr><tr><td>9</td><td>INFO</td><td>LOG</td><td>Command processed</td></tr><tr><td>10</td><td>INFO</td><td>LOG</td><td>Sensor override applied</td></tr><tr><td>11</td><td>INFO</td><td>FAULT_CLEARED</td><td>Fault cleared</td></tr><tr><td>11</td><td>INFO</td><td>LOG</td><td>Sensor override applied</td></tr><tr><td>11</td><td>INFO</td><td>STATE_TRANSITION</td><td>State transition</td></tr><tr><td>12</td><td>INFO</td><td>LOG</td><td>Command processed</td></tr><tr><td>14</td><td>INFO</td><td>LOG</td><td>Command processed</td></tr><tr><td>14</td><td>INFO</td><td>STATE_TRANSITION</td><td>State transition</td></tr></tbody>
+    </table>
+  </section>
+</body>
+</html>

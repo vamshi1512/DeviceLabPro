@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DeviceLab Pro Report</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07111f;
+      --panel: rgba(10, 21, 39, 0.82);
+      --border: rgba(137, 195, 255, 0.18);
+      --text: #edf4ff;
+      --muted: #90a6c3;
+      --accent: #5db4ff;
+      --pass: #4ade80;
+      --fail: #f97316;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Space Grotesk", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(93, 180, 255, 0.16), transparent 36%),
+        linear-gradient(180deg, #07111f 0%, #030812 100%);
+      color: var(--text);
+      padding: 32px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 24px 64px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(16px);
+    }
+    h1, h2 { margin: 0 0 14px; }
+    .metric {
+      font-size: 32px;
+      font-weight: 700;
+      margin-top: 10px;
+    }
+    .muted { color: var(--muted); }
+    .assertion {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 10px 0;
+    }
+    .assertion.pass strong { color: var(--pass); }
+    .assertion.fail strong { color: var(--fail); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      text-align: left;
+      padding: 10px 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+  </style>
+</head>
+<body>
+  <div class="grid">
+    <section class="panel">
+      <h1>Failure Recovery</h1>
+      <div class="muted">Drives the controller into an overtemperature fault, cools it back into range, acknowledges the fault, and verifies controlled recovery.</div>
+      <div class="metric">PASS</div>
+      <div class="muted">run id failure-recovery-9446ffd282c3</div>
+    </section>
+    <section class="panel">
+      <h2>Final State</h2>
+      <div class="metric">OFF</div>
+      <div class="muted">digest 9446ffd282c31318</div>
+    </section>
+    <section class="panel">
+      <h2>Counts</h2>
+      <div class="muted">telemetry frames 20</div>
+      <div class="muted">log entries 25</div>
+      <div class="muted">state transitions 9</div>
+    </section>
+  </div>
+
+  <section class="panel" style="margin-top: 18px;">
+    <h2>Assertions</h2>
+    <div><li class='assertion pass'><span>tick 8</span><strong>State matched expected value FAULTED</strong></li><li class='assertion pass'><span>tick 8</span><strong>Fault OVERHEATING present</strong></li><li class='assertion pass'><span>tick 10</span><strong>Fault OVERHEATING absent</strong></li><li class='assertion pass'><span>tick 11</span><strong>State matched expected value RECOVERING</strong></li><li class='assertion pass'><span>tick 14</span><strong>State matched expected value RUNNING</strong></li><li class='assertion pass'><span>tick 18</span><strong>State matched expected value OFF</strong></li></div>
+  </section>
+
+  <section class="panel" style="margin-top: 18px;">
+    <h2>Recent Telemetry</h2>
+    <table>
+      <thead>
+        <tr><th>Tick</th><th>State</th><th>Temp C</th><th>Pressure kPa</th><th>Flow LPM</th></tr>
+      </thead>
+      <tbody><tr><td>8</td><td>FAULTED</td><td>79.4</td><td>102.1</td><td>15.0</td></tr><tr><td>9</td><td>FAULTED</td><td>76.8</td><td>100.3</td><td>15.0</td></tr><tr><td>10</td><td>FAULTED</td><td>51.4</td><td>98.8</td><td>6.9</td></tr><tr><td>11</td><td>RECOVERING</td><td>48.8</td><td>100.3</td><td>10.9</td></tr><tr><td>12</td><td>RECOVERING</td><td>48.0</td><td>100.3</td><td>15.0</td></tr><tr><td>13</td><td>RECOVERING</td><td>45.4</td><td>100.3</td><td>15.0</td></tr><tr><td>14</td><td>RUNNING</td><td>48.5</td><td>103.5</td><td>15.0</td></tr><tr><td>15</td><td>RUNNING</td><td>51.7</td><td>105.3</td><td>15.0</td></tr><tr><td>16</td><td>IDLE</td><td>50.0</td><td>103.3</td><td>13.9</td></tr><tr><td>17</td><td>SHUTDOWN</td><td>49.0</td><td>101.3</td><td>12.8</td></tr><tr><td>18</td><td>OFF</td><td>48.2</td><td>99.3</td><td>11.7</td></tr><tr><td>19</td><td>OFF</td><td>47.4</td><td>98.8</td><td>10.6</td></tr></tbody>
+    </table>
+  </section>
+
+  <section class="panel" style="margin-top: 18px;">
+    <h2>Recent Logs</h2>
+    <table>
+      <thead>
+        <tr><th>Tick</th><th>Severity</th><th>Event</th><th>Message</th></tr>
+      </thead>
+      <tbody><tr><td>3</td><td>INFO</td><td>STATE_TRANSITION</td><td>State transition</td></tr><tr><td>5</td><td>INFO</td><td>LOG</td><td>Command processed</td></tr><tr><td>7</td><td>INFO</td><td>LOG</td><td>Sensor override applied</td></tr><tr><td>8</td><td>INFO</td><td>LOG</td><td>Sensor override applied</td></tr><tr><td>8</td><td>CRITICAL</td><td>FAULT_RAISED</td><td>Fault raised</td></tr><tr><td>8</td><td>INFO</td><td>STATE_TRANSITION</td><td>State transition</td></tr><tr><td>9</td><td>INFO</td><td>SCENARIO_MARKER</td><td>Critical overtemperature fault should latch safe-state outputs</td></tr><tr><td>10</td><td>INFO</td><td>LOG</td><td>Sensor override applied</td></tr><tr><td>10</td><td>INFO</td><td>FAULT_CLEARED</td><td>Fault cleared</td></tr><tr><td>11</td><td>INFO</td><td>LOG</td><td>Command processed</td></tr><tr><td>11</td><td>INFO</td><td>STATE_TRANSITION</td><td>State transition</td></tr><tr><td>11</td><td>INFO</td><td>LOG</td><td>Command processed</td></tr><tr><td>12</td><td>INFO</td><td>LOG</td><td>Sensor override applied</td></tr><tr><td>14</td><td>INFO</td><td>LOG</td><td>Command processed</td></tr><tr><td>14</td><td>INFO</td><td>STATE_TRANSITION</td><td>State transition</td></tr><tr><td>16</td><td>INFO</td><td>LOG</td><td>Command processed</td></tr><tr><td>16</td><td>INFO</td><td>STATE_TRANSITION</td><td>State transition</td></tr><tr><td>17</td><td>INFO</td><td>LOG</td><td>Command processed</td></tr><tr><td>17</td><td>INFO</td><td>STATE_TRANSITION</td><td>State transition</td></tr><tr><td>18</td><td>INFO</td><td>STATE_TRANSITION</td><td>State transition</td></tr></tbody>
+    </table>
+  </section>
+</body>
+</html>

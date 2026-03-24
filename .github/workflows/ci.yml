@@ -1,0 +1,52 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  cpp-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install toolchain
+        run: sudo apt-get update && sudo apt-get install -y cmake ninja-build
+      - name: Configure
+        run: cmake -S . -B build -G Ninja
+      - name: Build
+        run: cmake --build build
+      - name: Test
+        run: ctest --test-dir build --output-on-failure
+      - name: Scenario smoke
+        run: ./build/devicelab_cli run --scenario scenarios/nominal_behavior.json --profile profiles/thermal_controller_mk1.json --output-dir runs/ci_nominal
+
+  python-tooling:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install tooling dependencies
+        run: pip install -r tools/bridge/requirements-dev.txt
+      - name: Syntax check
+        run: python -m py_compile tools/bridge/server.py tools/reporting/render_report.py
+      - name: Tooling tests
+        run: python -m pytest tools -q
+
+  dashboard:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dashboard
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: dashboard/package-lock.json
+      - name: Install
+        run: npm ci
+      - name: Build
+        run: npm run build

@@ -1,0 +1,206 @@
+{
+  "expected_digest": "385b16c50c124841",
+  "format_version": 1,
+  "profile": {
+    "ambient_temperature_c": 24.0,
+    "boosted_fan_pwm": 92,
+    "boot_ticks": 2,
+    "cooling_per_tick": 2.3,
+    "critical_temperature_c": 79.0,
+    "degraded_escalation_ticks": 5,
+    "description": "Baseline thermal process controller tuned for deterministic integration testing.",
+    "heartbeat_timeout_ticks": 4,
+    "heat_gain_per_tick": 3.6,
+    "id": "thermal-controller-v1",
+    "initial_temperature_c": 24.0,
+    "max_pressure_kpa": 116.0,
+    "min_pressure_kpa": 96.0,
+    "name": "Thermal Controller Mk1",
+    "nominal_fan_pwm": 55,
+    "nominal_pressure_kpa": 101.3,
+    "pressure_drop_per_tick": 1.1,
+    "pump_flow_degraded_lpm": 8.0,
+    "pump_flow_nominal_lpm": 15.0,
+    "recovery_temperature_c": 58.0,
+    "recovery_ticks": 3,
+    "sensor_noise_pressure_kpa": 0.0,
+    "sensor_noise_temperature_c": 0.0,
+    "shutdown_ticks": 1,
+    "target_temperature_c": 62.0,
+    "warning_temperature_c": 71.0
+  },
+  "scenario": {
+    "description": "Injects a communications fault, verifies degraded operation, and confirms recovery back to nominal control.",
+    "deterministic": true,
+    "duration_ticks": 16,
+    "events": [
+      {
+        "command": {
+          "source": "scenario",
+          "type": "POWER_ON"
+        },
+        "note": "",
+        "tick": 0,
+        "type": "command"
+      },
+      {
+        "command": {
+          "source": "scenario",
+          "type": "START_CYCLE"
+        },
+        "note": "",
+        "tick": 3,
+        "type": "command"
+      },
+      {
+        "command": {
+          "source": "scenario",
+          "type": "HEARTBEAT"
+        },
+        "note": "",
+        "tick": 5,
+        "type": "command"
+      },
+      {
+        "note": "",
+        "sensor_override": {
+          "flow_lpm": 14.2,
+          "pressure_kpa": 103.9,
+          "temperature_c": 37.2
+        },
+        "tick": 6,
+        "type": "sensor_override"
+      },
+      {
+        "fault": "COMMUNICATION_FAILURE",
+        "note": "Telemetry drop injected",
+        "tick": 7,
+        "type": "inject_fault"
+      },
+      {
+        "note": "",
+        "sensor_override": {
+          "flow_lpm": 6.1,
+          "link_ok": false,
+          "pressure_kpa": 98.6
+        },
+        "tick": 8,
+        "type": "sensor_override"
+      },
+      {
+        "note": "Controller should remain operational in degraded mode",
+        "tick": 8,
+        "type": "note"
+      },
+      {
+        "command": {
+          "source": "scenario",
+          "type": "HEARTBEAT"
+        },
+        "note": "",
+        "tick": 9,
+        "type": "command"
+      },
+      {
+        "note": "",
+        "sensor_override": {
+          "flow_lpm": 5.0,
+          "link_ok": false,
+          "pressure_kpa": 97.4,
+          "temperature_c": 45.4
+        },
+        "tick": 10,
+        "type": "sensor_override"
+      },
+      {
+        "fault": "COMMUNICATION_FAILURE",
+        "note": "Telemetry link restored",
+        "tick": 11,
+        "type": "clear_fault"
+      },
+      {
+        "note": "",
+        "sensor_override": {
+          "flow_lpm": 13.2,
+          "link_ok": true,
+          "pressure_kpa": 102.1
+        },
+        "tick": 11,
+        "type": "sensor_override"
+      },
+      {
+        "command": {
+          "source": "scenario",
+          "type": "HEARTBEAT"
+        },
+        "note": "",
+        "tick": 12,
+        "type": "command"
+      },
+      {
+        "command": {
+          "source": "scenario",
+          "type": "STOP_CYCLE"
+        },
+        "note": "",
+        "tick": 14,
+        "type": "command"
+      }
+    ],
+    "expectations": [
+      {
+        "field": "",
+        "kind": "state_equals",
+        "tick": 2,
+        "value": "IDLE"
+      },
+      {
+        "field": "",
+        "kind": "state_equals",
+        "tick": 7,
+        "value": "DEGRADED"
+      },
+      {
+        "fault": "COMMUNICATION_FAILURE",
+        "field": "",
+        "kind": "fault_present",
+        "tick": 8
+      },
+      {
+        "field": "fan_pwm",
+        "kind": "actuator_at_least",
+        "tick": 8,
+        "value": 90.0
+      },
+      {
+        "contains": "Fault raised",
+        "field": "",
+        "kind": "log_contains",
+        "tick": 10
+      },
+      {
+        "fault": "COMMUNICATION_FAILURE",
+        "field": "",
+        "kind": "fault_absent",
+        "tick": 11
+      },
+      {
+        "field": "",
+        "kind": "state_equals",
+        "tick": 11,
+        "value": "RUNNING"
+      },
+      {
+        "field": "",
+        "kind": "state_equals",
+        "tick": 14,
+        "value": "IDLE"
+      }
+    ],
+    "id": "degraded-behavior",
+    "name": "Degraded Behavior",
+    "profile_id": "thermal-controller-v1",
+    "seed": 11
+  },
+  "seed": 11
+}

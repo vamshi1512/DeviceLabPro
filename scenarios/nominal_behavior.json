@@ -1,0 +1,34 @@
+{
+  "id": "nominal-behavior",
+  "name": "Nominal Behavior",
+  "description": "Baseline startup, heating cycle, and clean shutdown with deterministic heartbeats.",
+  "ui_rank": 1,
+  "profile_id": "thermal-controller-v1",
+  "duration_ticks": 20,
+  "seed": 7,
+  "deterministic": true,
+  "events": [
+    { "tick": 0, "type": "command", "command": { "type": "POWER_ON", "source": "scenario" } },
+    { "tick": 3, "type": "command", "command": { "type": "START_CYCLE", "source": "scenario" } },
+    { "tick": 4, "type": "command", "command": { "type": "SET_TARGET_TEMPERATURE", "source": "scenario", "value": 66.0 } },
+    { "tick": 5, "type": "sensor_override", "sensor_override": { "temperature_c": 31.4, "pressure_kpa": 104.2, "flow_lpm": 11.8 } },
+    { "tick": 6, "type": "command", "command": { "type": "HEARTBEAT", "source": "scenario" } },
+    { "tick": 9, "type": "sensor_override", "sensor_override": { "temperature_c": 48.6, "pressure_kpa": 105.1, "flow_lpm": 14.7 } },
+    { "tick": 10, "type": "command", "command": { "type": "HEARTBEAT", "source": "scenario" } },
+    { "tick": 13, "type": "sensor_override", "sensor_override": { "temperature_c": 61.8, "pressure_kpa": 104.8, "flow_lpm": 15.0 } },
+    { "tick": 14, "type": "command", "command": { "type": "HEARTBEAT", "source": "scenario" } },
+    { "tick": 15, "type": "note", "note": "Nominal thermal cycle stabilized" },
+    { "tick": 16, "type": "command", "command": { "type": "STOP_CYCLE", "source": "scenario" } },
+    { "tick": 17, "type": "command", "command": { "type": "POWER_OFF", "source": "scenario" } }
+  ],
+  "expectations": [
+    { "tick": 2, "kind": "state_equals", "value": "IDLE" },
+    { "tick": 3, "kind": "state_equals", "value": "RUNNING" },
+    { "tick": 6, "kind": "state_equals", "value": "RUNNING" },
+    { "tick": 8, "kind": "temperature_above", "value": 35.0 },
+    { "tick": 13, "kind": "temperature_above", "value": 60.0 },
+    { "tick": 14, "kind": "fault_absent", "fault": "COMMUNICATION_FAILURE" },
+    { "tick": 16, "kind": "state_equals", "value": "IDLE" },
+    { "tick": 18, "kind": "state_equals", "value": "OFF" }
+  ]
+}
