@@ -5,11 +5,13 @@ import { reduceBridgeEvent } from "../lib/state";
 import type { OverviewPayload, ProfileMeta, ScenarioMeta } from "../types/api";
 
 type ConnectionState = "connecting" | "live" | "offline";
+const websocketRetryDelayMs = 1500;
 
 export function useDashboard() {
   const [overview, setOverview] = useState<OverviewPayload | null>(null);
   const [selectedScenarioId, setSelectedScenarioId] = useState("");
   const [selectedProfileId, setSelectedProfileId] = useState("");
+  const [selectedDelayMs, setSelectedDelayMs] = useState(400);
   const [connection, setConnection] = useState<ConnectionState>("connecting");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -48,41 +50,62 @@ export function useDashboard() {
   }, [overview, selectedScenarioId]);
 
   useEffect(() => {
-    const websocket = new WebSocket(bridgeWebSocketUrl());
-    setConnection("connecting");
+    let disposed = false;
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
+    let websocket: WebSocket | null = null;
 
-    websocket.onopen = () => {
-      setConnection("live");
-    };
-
-    websocket.onmessage = (event) => {
-      try {
-        const envelope = parseBridgeEvent(JSON.parse(event.data));
-        startTransition(() => {
-          setOverview((current) => reduceBridgeEvent(current, envelope));
-        });
-
-        if (envelope.type === "summary") {
-          void loadOverview();
-        }
-        if (envelope.type === "stderr" && envelope.payload.message) {
-          setError(envelope.payload.message);
-        }
-      } catch (issue) {
-        setError(issue instanceof Error ? issue.message : "Received invalid bridge event");
+    const connect = () => {
+      if (disposed) {
+        return;
       }
+
+      setConnection("connecting");
+      websocket = new WebSocket(bridgeWebSocketUrl());
+
+      websocket.onopen = () => {
+        setConnection("live");
+        setError(null);
+      };
+
+      websocket.onmessage = (event) => {
+        try {
+          const envelope = parseBridgeEvent(JSON.parse(event.data));
+          startTransition(() => {
+            setOverview((current) => reduceBridgeEvent(current, envelope));
+          });
+
+          if (envelope.type === "summary") {
+            void loadOverview();
+          }
+          if (envelope.type === "stderr" && envelope.payload.message) {
+            setError(envelope.payload.message);
+          }
+        } catch (issue) {
+          setError(issue instanceof Error ? issue.message : "Received invalid bridge event");
+        }
+      };
+
+      websocket.onclose = () => {
+        if (disposed) {
+          return;
+        }
+        setConnection("offline");
+        retryTimer = setTimeout(connect, websocketRetryDelayMs);
+      };
+
+      websocket.onerror = () => {
+        setConnection("offline");
+      };
     };
 
-    websocket.onclose = () => {
-      setConnection("offline");
-    };
-
-    websocket.onerror = () => {
-      setConnection("offline");
-    };
+    connect();
 
     return () => {
-      websocket.close();
+      disposed = true;
+      if (retryTimer) {
+        clearTimeout(retryTimer);
+      }
+      websocket?.close();
     };
   }, []);
 
@@ -92,7 +115,8 @@ export function useDashboard() {
     }
     try {
       setError(null);
-      await startScenarioRun(selectedScenarioId, selectedProfileId);
+      await startScenarioRun(selectedScenarioId, selectedProfileId, selectedDelayMs);
+      await loadOverview();
     } catch (issue) {
       setError(issue instanceof Error ? issue.message : "Failed to start run");
     }
@@ -109,6 +133,8 @@ export function useDashboard() {
     setSelectedScenarioId,
     selectedProfileId,
     setSelectedProfileId,
+    selectedDelayMs,
+    setSelectedDelayMs,
     selectedScenario,
     selectedProfile,
     connection,

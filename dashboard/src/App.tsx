@@ -11,6 +11,13 @@ import { TelemetryChart } from "./components/telemetry-chart";
 import { TimelinePanel } from "./components/timeline-panel";
 import { useDashboard } from "./hooks/use-dashboard";
 
+const delayPresets = [
+  { value: 80, label: "Fast", hint: "0.08s per tick" },
+  { value: 160, label: "Normal", hint: "0.16s per tick" },
+  { value: 400, label: "Slow", hint: "0.4s per tick" },
+  { value: 800, label: "Demo", hint: "0.8s per tick" },
+];
+
 function stateTone(state?: string | null) {
   if (state === "FAULTED") {
     return "border-signal-error/30 bg-signal-error/10 text-signal-error";
@@ -31,6 +38,8 @@ export default function App() {
     setSelectedScenarioId,
     selectedProfileId,
     setSelectedProfileId,
+    selectedDelayMs,
+    setSelectedDelayMs,
     selectedScenario,
     selectedProfile,
     connection,
@@ -70,6 +79,9 @@ export default function App() {
 
   const hasScenarioCatalog = overview.scenarios.length > 0;
   const hasProfileCatalog = overview.profiles.length > 0;
+  const selectedDelay =
+    delayPresets.find((preset) => preset.value === selectedDelayMs) ?? delayPresets[delayPresets.length - 1];
+  const activeDelayMs = overview.active_run?.delay_ms ?? selectedDelayMs;
 
   return (
     <div className="relative min-h-screen overflow-hidden">
@@ -102,6 +114,10 @@ export default function App() {
                 <span className="signal-chip border-white/10 bg-white/5 text-slate-300">
                   <Bot className="h-3.5 w-3.5" />
                   {overview?.binary_available ? "CLI online" : "CLI missing"}
+                </span>
+                <span className="signal-chip border-white/10 bg-white/5 text-slate-300">
+                  <Activity className="h-3.5 w-3.5" />
+                  {activeDelayMs} ms/tick
                 </span>
                 {overview.active_run ? (
                   <span className="signal-chip border-accent-400/30 bg-accent-500/10 text-accent-400">
@@ -153,9 +169,9 @@ export default function App() {
 
               <div className="rounded-[28px] border border-white/10 bg-black/15 p-5 md:col-span-2">
                 <div className="panel-label">Scenario Console</div>
-                <div className="mt-4 grid gap-3 md:grid-cols-[1fr,1fr,auto]">
+                <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
                   <select
-                    className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none"
+                    className="min-w-0 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none"
                     value={selectedScenarioId}
                     disabled={!hasScenarioCatalog}
                     onChange={(event) => {
@@ -174,7 +190,7 @@ export default function App() {
                     ))}
                   </select>
                   <select
-                    className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none"
+                    className="min-w-0 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none"
                     value={selectedProfileId}
                     disabled={!hasProfileCatalog}
                     onChange={(event) => setSelectedProfileId(event.target.value)}
@@ -185,8 +201,21 @@ export default function App() {
                       </option>
                     ))}
                   </select>
+                  <select
+                    className="min-w-0 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white outline-none"
+                    value={selectedDelayMs}
+                    onChange={(event) => setSelectedDelayMs(Number(event.target.value))}
+                  >
+                    {delayPresets.map((preset) => (
+                      <option key={preset.value} value={preset.value}>
+                        {preset.label} · {preset.hint}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="mt-3">
                   <button
-                    className="rounded-2xl bg-accent-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-accent-400 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="w-full rounded-2xl bg-accent-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-accent-400 disabled:cursor-not-allowed disabled:opacity-60"
                     type="button"
                     disabled={!overview?.binary_available || isPending || !hasScenarioCatalog || !hasProfileCatalog}
                     onClick={() => void runSelectedScenario()}
@@ -203,6 +232,10 @@ export default function App() {
                 <div className="mt-4 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-400">
                   <div>{selectedScenario?.description ?? "Select a scenario to start a live stream."}</div>
                   <div>{selectedProfile?.description ?? ""}</div>
+                </div>
+                <div className="mt-3 text-sm text-slate-500">
+                  Run pace: <span className="text-slate-300">{selectedDelay.label}</span> at {selectedDelay.hint}.
+                  Higher delays make the telemetry easier to watch live.
                 </div>
                 {!hasScenarioCatalog || !hasProfileCatalog ? (
                   <div className="mt-3 rounded-2xl border border-dashed border-white/10 px-4 py-3 text-sm text-slate-400">

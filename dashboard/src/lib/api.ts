@@ -23,7 +23,7 @@ export async function fetchOverview(): Promise<OverviewPayload> {
   return parseOverviewPayload(await response.json());
 }
 
-export async function startScenarioRun(scenarioId: string, profileId: string) {
+export async function startScenarioRun(scenarioId: string, profileId: string, delayMs: number) {
   const response = await fetch(`${bridgeBase}/api/runs/${scenarioId}`, {
     method: "POST",
     headers: {
@@ -31,6 +31,7 @@ export async function startScenarioRun(scenarioId: string, profileId: string) {
     },
     body: JSON.stringify({
       profile_id: profileId,
+      delay_ms: delayMs,
     }),
   });
   if (!response.ok) {
