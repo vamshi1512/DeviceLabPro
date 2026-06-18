@@ -52,8 +52,8 @@ flowchart LR
 ```
 
 Additional design notes:
-- [Architecture](/Users/burrivamshikrishna/Desktop/DeviceLabPro/docs/architecture.md)
-- [State Machine](/Users/burrivamshikrishna/Desktop/DeviceLabPro/docs/state-machine.md)
+- [Architecture](docs/architecture.md)
+- [State Machine](docs/state-machine.md)
 
 ## Quick Start
 
